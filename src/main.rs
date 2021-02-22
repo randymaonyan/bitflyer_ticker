@@ -5,6 +5,7 @@ use std::sync::mpsc;
 use std::thread;
 
 use anyhow::*;
+use chrono::*;
 use tungstenite::{connect, Message as Msg};
 use url::Url;
 
@@ -54,10 +55,16 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn show_ticker(tick: &Root) {
+
+    let to_date = |s: &String| -> String {
+        let dt = NaiveDateTime::parse_from_str(&s, "%Y-%m-%dT%H:%M:%S.%f%Z").unwrap();
+        dt.format("%Y/%m/%d %H:%M:%S").to_string()
+    };
+
     println!(
         "{} {} {} {}",
         tick.params.message.product_code,
-        tick.params.message.timestamp,
+        to_date(&tick.params.message.timestamp),
         tick.params.message.volume_by_product,
         tick.params.message.ltp
     )
