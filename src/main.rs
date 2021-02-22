@@ -34,7 +34,7 @@ fn main() -> anyhow::Result<()> {
 
     let (tx, rx) = mpsc::channel();
     
-    let handle = thread::spawn(move || loop {
+    thread::spawn(move || loop {
         let msg = socket.read_message().unwrap();
         let msg = msg.to_text().unwrap();
         // let res: Root = serde_json::from_str(msg).expect("json parse error");
@@ -50,7 +50,6 @@ fn main() -> anyhow::Result<()> {
         show_ticker(&res);
     }
 
-    handle.join().unwrap();
     Ok(())
 }
 
