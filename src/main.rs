@@ -14,6 +14,8 @@ const METHOD: &str =
     r#"{"jsonrpc":"2.0","method":"subscribe","params":{"channel":"lightning_ticker_BTC_JPY"}}"#;
 
 fn main() -> anyhow::Result<()> {
+
+    // エンドポイントに接続
     let (mut socket, response) =connect(Url::parse(URL)
         .unwrap())
         .context(format!("connection error: {}", URL))?;
@@ -25,19 +27,23 @@ fn main() -> anyhow::Result<()> {
         println!("* {}: {:?}", header, value);
     }
 
+    // Ctrl+C押下時の処理
     ctrlc::set_handler(|| {
         println!("Closing");
         std::process::exit(0);
     }).expect("quit error");
     
+    // サブスクライブ
     socket.write_message(Msg::Text(METHOD.into())).context(format!("socket write error: {}", METHOD))?;
 
     let (tx, rx) = mpsc::channel();
     
+    // Tickerの送信スレッド
     thread::spawn(move || loop {
         let msg = socket.read_message().unwrap();
         let msg = msg.to_text().unwrap();
-        // let res: Root = serde_json::from_str(msg).expect("json parse error");
+
+        // たまにinvalidなレスポンスが返却されるため、Errは無視
         match serde_json::from_str(msg) {
             Ok(res) => tx.send(res).unwrap(),
             Err(_) => {
@@ -46,6 +52,7 @@ fn main() -> anyhow::Result<()> {
         }
     });
 
+    // Tickerの受信
     for res in rx {
         show_ticker(&res);
     }
