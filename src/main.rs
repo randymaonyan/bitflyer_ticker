@@ -1,9 +1,8 @@
 mod structs;
-use structs::{Params, Root};
+use structs::Root;
 
 use std::sync::mpsc;
 use std::thread;
-
 
 use anyhow::*;
 use chrono::*;
