@@ -10,7 +10,7 @@ pub struct Root {
 #[serde(rename_all = "camelCase")]
 pub struct Params {
     pub channel: String,
-    pub message: Message,
+    pub message: Option<Message>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde_derive::Serialize, serde_derive::Deserialize)]
