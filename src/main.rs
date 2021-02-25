@@ -4,8 +4,10 @@ use structs::{Params, Root};
 use std::sync::mpsc;
 use std::thread;
 
+
 use anyhow::*;
 use chrono::*;
+use serde_json::json;
 use tungstenite::{connect, Message as Msg};
 use url::Url;
 
@@ -29,20 +31,17 @@ fn main() -> anyhow::Result<()> {
         std::process::exit(0);
     })
     .expect("quit error");
-    // サーバメソッド
-    let req = Root {
-        jsonrpc: "2.0".to_string(),
-        method: "subscribe".to_string(),
-        params: Params {
-            channel: "lightning_ticker_BTC_JPY".to_string(),
-            message: None,
-        },
-    };
 
-    let req = serde_json::to_string(&req).unwrap();
+    let req = json!({
+        "jsonrpc": "2.0",
+        "method": "subscribe",
+        "params": {
+            "channel": "lightning_ticker_BTC_JPY"
+        }
+    });
 
     // サブスクライブ
-    socket.write_message(Msg::Text(req.clone())).context(format!("socket write error: {}", req))?;
+    socket.write_message(Msg::Text(req.to_string())).unwrap();
 
     let (tx, rx) = mpsc::channel();
 
@@ -75,10 +74,9 @@ fn show_ticker(tick: &Root) {
     };
 
     println!(
-        "{} {} {} {}",
-        tick.params.message.as_ref().unwrap().product_code,
-        to_date(&tick.params.message.as_ref().unwrap().timestamp),
-        tick.params.message.as_ref().unwrap().volume_by_product,
-        tick.params.message.as_ref().unwrap().ltp
+        "{} {} {}",
+        to_date(&tick.params.message.timestamp),
+        tick.params.message.volume_by_product,
+        tick.params.message.ltp
     )
 }
