@@ -61,7 +61,7 @@ pub fn get_ticker() -> anyhow::Result<()> {
         }
     });
 
-    // チャネルのの受信
+    // チャネルの受信
     for res in rx {
         show_ticker(&res);
     }
