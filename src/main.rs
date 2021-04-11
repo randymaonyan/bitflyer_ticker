@@ -1,8 +1,8 @@
 mod structs;
-use bitflyer_ticker::get_ticker;
+use bitflyer_ticker::stream_ticker;
 
 fn main() -> anyhow::Result<()> {
-    if let Err(e) = get_ticker() {
+    if let Err(e) = stream_ticker() {
         eprintln!("Error: {}", e);
         std::process::exit(1);
     }

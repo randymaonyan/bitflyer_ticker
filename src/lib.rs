@@ -10,7 +10,7 @@ use url::Url;
 const ENDPOINT: &str = "wss://ws.lightstream.bitflyer.com/json-rpc";
 
 /// bitflyer APIを実行する関数
-pub fn get_ticker() -> anyhow::Result<()> {
+pub fn stream_ticker() -> anyhow::Result<()> {
     // APIエンドポイントに接続
     let (mut socket, response) = connect(Url::parse(ENDPOINT).unwrap())
         .context(format!("connection error: {}", ENDPOINT))?;
