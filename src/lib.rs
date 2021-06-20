@@ -40,29 +40,6 @@ pub fn stream_ticker() -> anyhow::Result<()> {
     // APIリクエストを送信
     socket.write_message(Msg::Text(req.to_string())).unwrap();
 
-    // APIレスポンスの受信、送信用チャネルの作成
-    // let (tx, rx) = mpsc::channel();
-
-    // レスポンスの受信、チャネルの送信スレッド
-    // thread::spawn(move || loop {
-    //     // APIレスポンスの読取り
-    //     let msg = socket.read_message().unwrap();
-    //     let msg = msg.to_text().unwrap();
-
-    //     // たまにinvalidなレスポンスが返却されるため、Errを無視する
-    //     match serde_json::from_str(msg) {
-    //         Ok(res) => tx.send(res).unwrap(),
-    //         Err(_) => {
-    //             // Error("EOF while parsing a value", line: 1, column: 0)
-    //         }
-    //     }
-    // });
-
-    // // チャネルの受信
-    // for res in rx {
-    //     show_ticker(&res);
-    // }
-
     loop {
         // APIレスポンスの読取り
         let msg = socket.read_message().context("Error reading message")?;
